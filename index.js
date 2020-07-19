@@ -1,5 +1,25 @@
 'use strict';
 
+class QueueIterator {
+    constructor(queue) {
+        this._queue = queue;
+        this._start = 0;
+    }
+
+    next() {
+        if (this._start >= this._queue.size) {
+            return {
+                value: undefined,
+                done: true,
+            }
+        }
+        return {
+            value: this._queue[this._start],
+            done: this._start++ === this._queue.size,
+        }
+    }
+}
+
 class Queue {
     constructor() {
         this._size = 0;
@@ -42,6 +62,10 @@ class Queue {
 
     front() {
         return this[0];
+    }
+
+    [Symbol.Iterator]() {
+        return new QueueIterator(this);
     }
 }
 
