@@ -69,12 +69,78 @@ class Queue {
     }
 }
 
+class PriorityQueueItem {
+    /**
+     *
+     * @param value
+     * @param {number} priority
+     */
+    constructor(value, priority) {
+        this._value = value;
+        this._priority = priority;
+    }
 
-const q = new Queue();
-for (let i = 0; i < 5; i++) {
-    q.enqueue(i);
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+    }
+
+    get priority() {
+        return this._priority;
+    }
+
+    set priority(value) {
+        if (typeof value !== 'number') {
+            throw new TypeError('Property value must be a number');
+        }
+        if (value < 0 || !Number.isInteger(value)) {
+            throw new RangeError('Your priority value does not fit');
+        }
+        this._priority = value;
+    }
 }
+
+class PriorityQueue extends Queue {
+    constructor() {
+        super();
+    }
+
+    enqueue(...rest) {
+        let QElement;
+        if (rest.length === 1) {
+            QElement = rest;
+        } else if (rest.length === 2) {
+            QElement = new PriorityQueueItem(rest[0], rest[1]);
+        }
+
+        if (this.isEmpty) {
+            this[0] = QElement;
+        } else {
+            for (let i = this.size - 1; i >= 0; i--) {
+                if (QElement.priority > this[i].priority) {
+                    this[i + 1] = this[i];
+                } else if (QElement.priority <= this[i].priority) {
+                    this[i + 1] = QElement;
+                    break;
+                }
+                if (i === 0) {
+                    this[this.size] = QElement;
+                    break;
+                }
+            }
+        }
+        return ++this.size;
+    }
+
+}
+
+const q = new PriorityQueue();
+q.enqueue('n1', 5);
+q.enqueue('n4', 1);
+q.enqueue('n2', 4);
+q.enqueue('n3', 2);
+q.enqueue(new PriorityQueueItem('n5', 0));
 console.log(q);
-console.log(q.dequeue());
-console.log(q);
-console.log(q.front());
